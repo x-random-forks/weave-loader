@@ -1,11 +1,11 @@
-package net.weavemc.loader.bootstrap
+package net.weavemc.loader.impl.bootstrap
 
 import net.weavemc.internals.GameInfo
-import net.weavemc.loader.bootstrap.transformer.ApplicationWrapper
-import net.weavemc.loader.bootstrap.transformer.SafeTransformer
-import net.weavemc.loader.bootstrap.transformer.URLClassLoaderAccessor
-import net.weavemc.loader.bootstrap.transformer.URLClassLoaderTransformer
-import net.weavemc.loader.util.*
+import net.weavemc.loader.impl.bootstrap.transformer.ApplicationWrapper
+import net.weavemc.loader.impl.bootstrap.transformer.SafeTransformer
+import net.weavemc.loader.impl.bootstrap.transformer.URLClassLoaderAccessor
+import net.weavemc.loader.impl.bootstrap.transformer.URLClassLoaderTransformer
+import net.weavemc.loader.impl.util.fatalError
 import java.lang.instrument.Instrumentation
 
 object Bootstrap {
@@ -37,7 +37,7 @@ object Bootstrap {
                     /**
                      * Start the Weave Loader initialization phase
                      */
-                    val wlc = loader.loadClass("net.weavemc.loader.WeaveLoader")
+                    val wlc = loader.loadClass("net.weavemc.loader.impl.WeaveLoaderImpl")
                     wlc.getConstructor(
                         URLClassLoaderAccessor::class.java,
                         Instrumentation::class.java

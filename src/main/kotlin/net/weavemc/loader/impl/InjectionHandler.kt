@@ -1,11 +1,15 @@
-package net.weavemc.loader
+package net.weavemc.loader.impl
 
 import com.grappenmaker.mappings.LambdaAwareRemapper
 import net.weavemc.api.Hook
 import net.weavemc.internals.dump
-import net.weavemc.loader.bootstrap.transformer.SafeTransformer
-import net.weavemc.loader.util.MappingsHandler.remap
-import net.weavemc.loader.util.*
+import net.weavemc.loader.impl.bootstrap.transformer.SafeTransformer
+import net.weavemc.loader.impl.util.*
+import net.weavemc.loader.impl.util.FileManager
+import net.weavemc.loader.impl.util.MappingsHandler.remap
+import net.weavemc.loader.impl.util.asClassNode
+import net.weavemc.loader.impl.util.asClassReader
+import net.weavemc.loader.impl.util.*
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
@@ -76,8 +80,8 @@ object InjectionHandler : SafeTransformer {
             finalNode.remap(lastNamespace, environmentNamespace)
                 .accept(LambdaAwareRemapper(classWriter, SimpleRemapper(inverseConflictsMapping)))
 
-            if (dumpBytecode) {
-                val bytecodeOut = FileManager.DUMP_DIRECTORY.resolve("$className.class")
+            if (net.weavemc.loader.impl.InjectionHandler.dumpBytecode) {
+                val bytecodeOut = net.weavemc.loader.impl.util.FileManager.DUMP_DIRECTORY.resolve("$className.class")
                     .also { it.parent.createDirectories() }.toFile()
 
                 runCatching {

@@ -1,4 +1,4 @@
-package net.weavemc.loader
+package net.weavemc.loader.impl
 
 import com.grappenmaker.mappings.ClasspathLoaders
 import com.grappenmaker.mappings.remappingNames
@@ -7,9 +7,9 @@ import net.weavemc.api.ModInitializer
 import net.weavemc.internals.GameInfo
 import net.weavemc.internals.MinecraftVersion
 import net.weavemc.internals.ModConfig
-import net.weavemc.loader.bootstrap.transformer.URLClassLoaderAccessor
-import net.weavemc.loader.mixin.SandboxedMixinLoader
-import net.weavemc.loader.util.*
+import net.weavemc.loader.impl.bootstrap.transformer.URLClassLoaderAccessor
+import net.weavemc.loader.impl.mixin.SandboxedMixinLoader
+import net.weavemc.loader.impl.util.*
 import org.objectweb.asm.tree.ClassNode
 import java.io.File
 import java.lang.instrument.Instrumentation
@@ -18,7 +18,7 @@ import java.util.jar.JarFile
 /**
  * The main class of the Weave Loader.
  */
-class WeaveLoader(
+class WeaveLoaderImpl(
     private val classLoader: URLClassLoaderAccessor,
     private val instrumentation: Instrumentation
 ) {
@@ -31,7 +31,7 @@ class WeaveLoader(
     private val mixinInstances = mutableMapOf<String, SandboxedMixinLoader>()
 
     companion object {
-        private var INSTANCE: WeaveLoader? = null
+        private var INSTANCE: WeaveLoaderImpl? = null
         @JvmStatic
         fun getInstance() = INSTANCE ?: fatalError("Attempted to retrieve WeaveLoader instance before it has been instantiated!")
     }

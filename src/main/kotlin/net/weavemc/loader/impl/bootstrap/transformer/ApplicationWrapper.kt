@@ -1,18 +1,17 @@
-package net.weavemc.loader.bootstrap.transformer
+package net.weavemc.loader.impl.bootstrap.transformer
 
 import net.weavemc.internals.asm
-import net.weavemc.loader.mixin.LoaderClassWriter
-import net.weavemc.loader.util.asClassNode
-import net.weavemc.loader.util.asClassReader
-import net.weavemc.loader.util.fatalError
-import net.weavemc.loader.util.illegalToReload
+import net.weavemc.loader.impl.mixin.LoaderClassWriter
+import net.weavemc.loader.impl.util.asClassNode
+import net.weavemc.loader.impl.util.asClassReader
+import net.weavemc.loader.impl.util.fatalError
+import net.weavemc.loader.impl.util.illegalToReload
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.LabelNode
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
 import java.lang.invoke.WrongMethodTypeException
-import java.net.URL
 import java.net.URLClassLoader
 
 // Makes sure to run the application within some notion of a "custom" ClassLoader,
@@ -36,7 +35,7 @@ object ApplicationWrapper {
             ldc(node.name.replace('/', '.'))
             aload(0)
             invokestatic(
-                "net/weavemc/loader/bootstrap/transformer/ApplicationWrapper",
+                "net/weavemc/loader/impl/bootstrap/transformer/ApplicationWrapper",
                 "wrap",
                 "(Ljava/lang/String;[Ljava/lang/String;)V"
             )
@@ -53,7 +52,7 @@ object ApplicationWrapper {
 
             aload(0)
             invokestatic(
-                "net/weavemc/loader/bootstrap/BootstrapContainer",
+                "net/weavemc/loader/impl/bootstrap/BootstrapContainer",
                 "finishBootstrap",
                 "(Ljava/lang/String;Ljava/lang/ClassLoader;[Ljava/lang/String;)V"
             )
@@ -101,7 +100,7 @@ object ApplicationWrapper {
 
             if (
                 illegalToReload.any { name.startsWith(it) } ||
-                name == "net.weavemc.loader.bootstrap.BootstrapContainer"
+                name == "net.weavemc.loader.impl.bootstrap.BootstrapContainer"
             ) return parent.loadClass(name)
 
             val internalName = name.replace('.', '/')

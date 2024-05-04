@@ -1,4 +1,4 @@
-package net.weavemc.loader.util
+package net.weavemc.loader.impl.util
 
 import net.weavemc.internals.GameInfo
 import java.io.File

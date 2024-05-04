@@ -1,4 +1,4 @@
-package net.weavemc.loader.bootstrap.transformer
+package net.weavemc.loader.impl.bootstrap.transformer
 
 import net.weavemc.internals.asm
 import org.objectweb.asm.ClassReader

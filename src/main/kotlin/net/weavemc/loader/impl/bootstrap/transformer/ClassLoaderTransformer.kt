@@ -1,10 +1,12 @@
-package net.weavemc.loader.bootstrap.transformer
+package net.weavemc.loader.impl.bootstrap.transformer
 
 import net.weavemc.internals.asm
 import net.weavemc.internals.internalNameOf
 import net.weavemc.internals.visitAsm
-import net.weavemc.loader.mixin.LoaderClassWriter
-import org.objectweb.asm.*
+import net.weavemc.loader.impl.mixin.LoaderClassWriter
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.LabelNode
 import java.net.URL

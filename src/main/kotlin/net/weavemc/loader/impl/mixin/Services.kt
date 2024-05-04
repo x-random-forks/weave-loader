@@ -1,7 +1,7 @@
-package net.weavemc.loader.mixin
+package net.weavemc.loader.impl.mixin
 
-import net.weavemc.loader.util.asClassNode
-import net.weavemc.loader.util.asClassReader
+import net.weavemc.loader.impl.util.asClassNode
+import net.weavemc.loader.impl.util.asClassReader
 import org.spongepowered.asm.launch.platform.container.ContainerHandleVirtual
 import org.spongepowered.asm.launch.platform.container.IContainerHandle
 import org.spongepowered.asm.logging.LoggerAdapterConsole
