@@ -1,4 +1,4 @@
-package net.weavemc.api.event
+package net.weavemc.loader.api.event
 
 /**
  * Annotate methods with this to make them event listeners.

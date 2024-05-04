@@ -2,7 +2,7 @@ package net.weavemc.loader.bootstrap
 
 import net.weavemc.api.Tweaker
 import net.weavemc.internals.ModConfig
-import net.weavemc.loader.WeaveLoader
+import net.weavemc.loader.WeaveLoaderImpl
 import net.weavemc.loader.bootstrap.transformer.ArgumentSanitizer
 import net.weavemc.loader.bootstrap.transformer.ModInitializerHook
 import net.weavemc.loader.bootstrap.transformer.URLClassLoaderTransformer
@@ -14,7 +14,7 @@ import java.util.jar.JarFile
 
 /**
  * The JavaAgent's `premain()` method, this is where initialization of Weave Loader begins.
- * Weave Loader's initialization begins by instantiating [WeaveLoader]
+ * Weave Loader's initialization begins by instantiating [WeaveLoaderImpl]
  */
 @Suppress("UNUSED_PARAMETER")
 fun premain(opt: String?, inst: Instrumentation) {

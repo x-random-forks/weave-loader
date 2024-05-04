@@ -1,4 +1,4 @@
-package net.weavemc.api.event
+package net.weavemc.loader.api.event
 
 /**
  * This is the base class for all events provided by the Weave Loader.

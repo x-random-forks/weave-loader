@@ -8,7 +8,7 @@ import net.weavemc.internals.MappingsType.MOJANG
 import net.weavemc.internals.MinecraftClient
 import net.weavemc.internals.MinecraftVersion
 import net.weavemc.loader.InjectionClassWriter
-import net.weavemc.loader.WeaveLoader
+import net.weavemc.loader.WeaveLoaderImpl
 import org.objectweb.asm.*
 import org.objectweb.asm.commons.ClassRemapper
 import org.objectweb.asm.commons.Remapper
@@ -45,7 +45,7 @@ object MappingsHandler {
         ) else emptyMap()
 
         val mapper = SimpleRemapper(names.toList().associate { (k, v) -> v to k })
-        val callback = ClasspathLoaders.fromLoader(WeaveLoader::class.java.classLoader)
+        val callback = ClasspathLoaders.fromLoader(WeaveLoaderImpl::class.java.classLoader)
 
         return { name -> callback(names[name] ?: name)?.remap(mapper) }
     }

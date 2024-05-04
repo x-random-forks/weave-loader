@@ -1,4 +1,4 @@
-package net.weavemc.api
+package net.weavemc.loader.api
 
 import java.lang.instrument.Instrumentation
 
