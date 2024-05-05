@@ -13,7 +13,7 @@ import java.net.URL
 import java.net.URLClassLoader
 
 interface URLClassLoaderAccessor {
-    val backing: ClassLoader
+    val backing: URLClassLoader
     fun addWeaveURL(url: URL)
 }
 
@@ -36,7 +36,7 @@ object URLClassLoaderTransformer : SafeTransformer {
             _return
         }
 
-        node.visitMethod(Opcodes.ACC_PUBLIC, "getBacking", "()Ljava/lang/ClassLoader;", null, null).visitAsm {
+        node.visitMethod(Opcodes.ACC_PUBLIC, "getBacking", "()Ljava/lang/URLClassLoader;", null, null).visitAsm {
             aload(0)
             areturn
         }

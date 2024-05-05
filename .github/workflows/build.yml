@@ -51,12 +51,11 @@ jobs:
         with:
           name: weaveloader-artifacts
           path: |
-            api/build/libs/
-            loader/build/libs/
+            build/libs/
 
       - name: Create release
         if: github.event_name == 'release'
-        working-directory: loader/build/libs
+        working-directory: build/libs
         run: |
           agent=Weave-Loader-Agent-${{github.event.release.name}}.jar
           sha256sum $agent > $agent.sha256
