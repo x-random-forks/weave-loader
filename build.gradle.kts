@@ -3,6 +3,9 @@ plugins {
     id("config-shade")
     `maven-publish`
 }
+// TODO: proper publishing
+// TODO: api jar
+// TODO: minecraft submodule
 
 repositories {
     maven("https://repo.weavemc.dev/releases")
@@ -11,18 +14,20 @@ repositories {
 }
 
 dependencies {
-//    shade(project(":api"))
     shade(libs.kxSer)
     shade(libs.bundles.asm)
     shade(libs.weaveInternals)
     shade(libs.mappingsUtil)
-    shade(libs.mixin)
+    shade(libs.mixin) {
+        exclude(group = "com.google.guava")
+        exclude(group = "com.google.code.gson")
+    }
 }
 
 tasks.jar {
     manifest.attributes(
-        "Premain-Class" to "net.weavemc.loader.bootstrap.AgentKt",
-        "Main-Class" to "net.weavemc.loader.bootstrap.AgentKt",
+        "Premain-Class" to "net.weavemc.loader.impl.bootstrap.AgentKt",
+        "Main-Class" to "net.weavemc.loader.impl.bootstrap.AgentKt",
         "Can-Retransform-Classes" to "true",
     )
 }

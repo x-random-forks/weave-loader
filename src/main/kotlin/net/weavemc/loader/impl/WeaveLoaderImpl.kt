@@ -33,7 +33,10 @@ class WeaveLoaderImpl(
     companion object {
         private var INSTANCE: WeaveLoaderImpl? = null
         @JvmStatic
-        fun getInstance() = INSTANCE ?: fatalError("Attempted to retrieve WeaveLoader instance before it has been instantiated!")
+        fun getInstance() = INSTANCE ?: run {
+            runCatching { throw Throwable() }.onFailure { it.printStackTrace() }
+            fatalError("Attempted to retrieve WeaveLoader instance before it has been instantiated!")
+        }
     }
 
     init {

@@ -9,7 +9,7 @@ val shade: Configuration by configurations.creating
 val api: Configuration by configurations.getting
 api.extendsFrom(shade)
 
-val shadedPackage = "net.weavemc.loader.shaded"
+val shadedPackage = "net.weavemc.loader.impl.shaded"
 
 tasks {
     val shadowJar by getting(ShadowJar::class) {

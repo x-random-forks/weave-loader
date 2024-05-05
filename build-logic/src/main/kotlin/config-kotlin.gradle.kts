@@ -12,10 +12,6 @@ repositories {
     mavenCentral()
 }
 
-base {
-    archivesName.set("weave-${project.name}")
-}
-
 java.withSourcesJar()
 
 kotlin {

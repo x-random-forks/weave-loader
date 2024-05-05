@@ -38,6 +38,10 @@ object Bootstrap {
                      * Start the Weave Loader initialization phase
                      */
                     val wlc = loader.loadClass("net.weavemc.loader.impl.WeaveLoaderImpl")
+                    println("[Weave] Starting Weave Loader initialization...")
+                    wlc.constructors.forEach {
+                        println(" - Constructor: $it")
+                    }
                     wlc.getConstructor(
                         URLClassLoaderAccessor::class.java,
                         Instrumentation::class.java

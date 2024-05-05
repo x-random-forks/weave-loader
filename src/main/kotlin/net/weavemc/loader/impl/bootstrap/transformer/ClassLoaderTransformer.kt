@@ -44,7 +44,7 @@ object URLClassLoaderTransformer : SafeTransformer {
         val loadClassInject = asm {
             // TODO: dry
             aload(1)
-            ldc("net.weavemc.loader.bootstrap")
+            ldc("net.weavemc.loader.impl.bootstrap")
             invokevirtual("java/lang/String", "startsWith", "(Ljava/lang/String;)Z")
 
             val notBootstrap = LabelNode()

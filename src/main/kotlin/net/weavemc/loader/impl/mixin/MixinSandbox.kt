@@ -59,7 +59,7 @@ class SandboxedMixinLoader(
 
     private val systemClasses = illegalToReload + setOf(
         "kotlin.", "kotlinx.", "org.objectweb.asm.",
-        "net.weavemc.loader.mixin.SandboxedMixinState"
+        "net.weavemc.loader.impl.mixin.SandboxedMixinState"
     )
 
     /**
