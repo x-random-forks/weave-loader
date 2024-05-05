@@ -7,8 +7,10 @@ import net.weavemc.api.ModInitializer
 import net.weavemc.internals.GameInfo
 import net.weavemc.internals.MinecraftVersion
 import net.weavemc.internals.ModConfig
+import net.weavemc.loader.api.WeaveLoader
 import net.weavemc.loader.impl.bootstrap.transformer.URLClassLoaderAccessor
 import net.weavemc.loader.impl.mixin.SandboxedMixinLoader
+import net.weavemc.loader.impl.mod.ModRegistryImpl
 import net.weavemc.loader.impl.util.*
 import org.objectweb.asm.tree.ClassNode
 import java.io.File
@@ -21,12 +23,16 @@ import java.util.jar.JarFile
 class WeaveLoaderImpl(
     private val classLoader: URLClassLoaderAccessor,
     private val instrumentation: Instrumentation
-) {
+) : WeaveLoader {
+    override val modRegistry = ModRegistryImpl
+    override val eventBus = EventBusImpl
+
     /**
      * Stored list of [WeaveMod]s.
      *
      * @see ModConfig
      */
+    @Deprecated("Use modRegistry instead", ReplaceWith("modRegistry.allMods"))
     val mods: MutableList<WeaveMod> = mutableListOf()
     private val mixinInstances = mutableMapOf<String, SandboxedMixinLoader>()
 

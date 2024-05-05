@@ -1,12 +1,12 @@
-package net.weavemc.api.event
+package net.weavemc.loader.api.event
 
 /**
- * This is the base class for all events provided by the Weave Loader.
+ * This is the base class for all events provided by Weave Loader.
  */
 abstract class Event
 
 /**
- * This is the base class for all *cancellable* events provided by the
+ * This is the base class for all *cancellable* events provided by
  * Weave Loader, extending [Event].
  */
 abstract class CancellableEvent : Event() {

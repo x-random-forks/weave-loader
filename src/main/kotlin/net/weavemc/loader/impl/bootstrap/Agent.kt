@@ -1,6 +1,6 @@
 package net.weavemc.loader.impl.bootstrap
 
-import net.weavemc.api.Tweaker
+import net.weavemc.loader.api.bootstrap.Tweaker
 import net.weavemc.internals.ModConfig
 import net.weavemc.loader.impl.WeaveLoaderImpl
 import net.weavemc.loader.impl.bootstrap.transformer.ArgumentSanitizer
