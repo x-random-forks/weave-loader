@@ -1,5 +1,7 @@
 package net.weavemc.internals
 
+import java.nio.file.Path
+import kotlin.io.path.Path
 import kotlin.properties.ReadOnlyProperty
 
 enum class MinecraftVersion(
@@ -56,6 +58,14 @@ object GameInfo {
 
     val version: MinecraftVersion by lazy {
         versionString.let(MinecraftVersion::fromVersionName) ?: error("Could not find game version")
+    }
+
+    val gameDirString: String by lazy {
+        rawGameInfo["gameDir"]?.lowercase() ?: error("Could not parse gameDir from arguments")
+    }
+
+    val gameDir: Path by lazy {
+        Path(gameDirString)
     }
 
     val clientString: String by lazy {

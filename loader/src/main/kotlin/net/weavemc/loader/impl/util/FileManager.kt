@@ -9,6 +9,7 @@ import kotlin.io.path.*
 internal object FileManager {
     private val logger by klog
     val MODS_DIRECTORY = getOrCreateDirectory("mods")
+    val CONFIG_DIRECTORY = getOrCreateDirectory("config")
     val DUMP_DIRECTORY = getOrCreateDirectory(".bytecode.out")
 
     fun getVanillaMinecraftJar(): File {

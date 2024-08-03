@@ -3,18 +3,15 @@ package net.weavemc.loader.impl.bootstrap
 import me.xtrm.klog.Level
 import me.xtrm.klog.dsl.klog
 import me.xtrm.klog.dsl.klogConfig
-import net.weavemc.loader.api.Tweaker
 import net.weavemc.internals.GameInfo
 import net.weavemc.internals.MinecraftVersion
 import net.weavemc.internals.ModConfig
-import net.weavemc.loader.impl.WeaveLoader
+import net.weavemc.loader.api.Tweaker
+import net.weavemc.loader.impl.WeaveLoaderImpl
 import net.weavemc.loader.impl.bootstrap.transformer.ArgumentSanitizer
 import net.weavemc.loader.impl.bootstrap.transformer.ModInitializerHook
 import net.weavemc.loader.impl.bootstrap.transformer.URLClassLoaderTransformer
 import net.weavemc.loader.impl.util.*
-import net.weavemc.loader.impl.util.JSON
-import net.weavemc.loader.impl.util.fatalError
-import net.weavemc.loader.impl.util.setGameInfo
 import java.awt.GraphicsEnvironment
 import java.io.File
 import java.lang.instrument.Instrumentation
@@ -26,7 +23,7 @@ private val logger by klog
 
 /**
  * The JavaAgent's `premain()` method, this is where initialization of Weave Loader begins.
- * Weave Loader's initialization begins by instantiating [WeaveLoader]
+ * Weave Loader's initialization begins by instantiating [WeaveLoaderImpl]
  */
 @Suppress("UNUSED_PARAMETER")
 public fun premain(opt: String?, inst: Instrumentation) {
@@ -111,7 +108,3 @@ private fun retrieveMods() = FileManager.getMods().map { it.parseAndMap() }
 public fun main() {
     fatalError("This is not how you use Weave! Please refer to the readme for instructions.")
 }
-
-@Retention
-@RequiresOptIn("This member is public but internal Weave API! Do not use.")
-public annotation class PublicButInternal

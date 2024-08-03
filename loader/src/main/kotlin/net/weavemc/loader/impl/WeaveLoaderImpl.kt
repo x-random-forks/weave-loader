@@ -1,63 +1,84 @@
 package net.weavemc.loader.impl
 
 import com.grappenmaker.mappings.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import me.xtrm.klog.Logger
+import net.weavemc.internals.GameInfo
 import net.weavemc.loader.api.Hook
 import net.weavemc.loader.api.ModInitializer
-import net.weavemc.internals.GameInfo
-import net.weavemc.internals.ModConfig
-import net.weavemc.loader.impl.bootstrap.PublicButInternal
+import net.weavemc.loader.api.WeaveLoader
+import net.weavemc.loader.api.mod.ModContact
+import net.weavemc.loader.api.mod.ModContributor
+import net.weavemc.loader.api.mod.ModLicense
 import net.weavemc.loader.impl.bootstrap.transformer.URLClassLoaderAccessor
-import net.weavemc.loader.impl.util.*
-import net.weavemc.loader.impl.util.fatalError
-import net.weavemc.loader.impl.util.launchStart
-import net.weavemc.loader.impl.util.updateLaunchTimes
 import net.weavemc.loader.impl.mixin.SandboxedMixinLoader
+import net.weavemc.loader.impl.mod.ModContainerImpl
+import net.weavemc.loader.impl.mod.model.ModContactImpl
+import net.weavemc.loader.impl.mod.model.ModContributorImpl
+import net.weavemc.loader.impl.mod.model.ModMetadataImpl
+import net.weavemc.loader.impl.mod.model.version.RawVersionImpl
+import net.weavemc.loader.impl.mod.model.version.SemanticVersionImpl
+import net.weavemc.loader.impl.util.*
 import org.objectweb.asm.tree.ClassNode
 import java.io.File
 import java.lang.instrument.Instrumentation
+import java.nio.file.Path
 import java.util.jar.JarFile
+import kotlin.io.path.Path
+
+private const val CONTRIBUTORS_FILE_PATH = "/weave-contributors.json"
 
 /**
  * The main class of the Weave Loader.
  */
-public class WeaveLoader(
+internal class WeaveLoaderImpl(
     private val classLoader: URLClassLoaderAccessor,
     private val instrumentation: Instrumentation,
     private val mappedModJars: List<File>
-) {
-    private val logger = Logger(WeaveLoader::class.java.name)
+) : WeaveLoader {
+    private val logger = Logger(WeaveLoaderImpl::class.java.name)
 
-    /**
-     * Stored list of [WeaveMod]s.
-     *
-     * @see ModConfig
-     */
-    private val mods = mutableListOf(
-        // Fake base game mod so dependencies can be made on them
-        // TODO: proper versioned dependencies, eg. optional, version greater/less than...
-        WeaveMod(
-            modId = "minecraft", config = ModConfig(
-                name = "Minecraft",
-                modId = "minecraft",
-                entryPoints = emptyList(),
-                mixinConfigs = emptyList(),
-                hooks = emptyList(),
-                tweakers = emptyList(),
-                namespace = MappingsHandler.environmentNamespace,
-                dependencies = emptyList(),
-                compiledFor = GameInfo.version.versionName
-            )
-        )
-    )
+    override val gameDir: Path
+        get() = GameInfo.gameDir
+    override val modsDir: Path
+        get() = FileManager.MODS_DIRECTORY
+    override val configDir: Path
+        get() = FileManager.CONFIG_DIRECTORY
+
+    override val mods: MutableList<ModContainerImpl> = mutableListOf()
+
+//    /**
+//     * Stored list of [WeaveMod]s.
+//     *
+//     * @see ModConfig
+//     */
+//    private val mods = mutableListOf(
+//        // Fake base game mod so dependencies can be made on them
+//        // TODO: proper versioned dependencies, eg. optional, version greater/less than...
+//        WeaveMod(
+//            modId = "minecraft", config = ModConfig(
+//                name = "Minecraft",
+//                modId = "minecraft",
+//                entryPoints = emptyList(),
+//                mixinConfigs = emptyList(),
+//                hooks = emptyList(),
+//                tweakers = emptyList(),
+//                namespace = MappingsHandler.environmentNamespace,
+//                dependencies = emptyList(),
+//                compiledFor = GameInfo.version.versionName
+//            )
+//        )
+//    )
 
     private val mixinInstances = mutableMapOf<String, SandboxedMixinLoader>()
 
-    public companion object {
-        private var INSTANCE: WeaveLoader? = null
+    companion object {
+        private var INSTANCE: WeaveLoaderImpl? = null
 
         @JvmStatic
-        public fun getInstance(): WeaveLoader = INSTANCE
+        internal fun getInstance(): WeaveLoaderImpl = INSTANCE
             ?: fatalError("Attempted to retrieve WeaveLoader instance before it has been instantiated!")
     }
 
@@ -67,6 +88,8 @@ public class WeaveLoader(
         INSTANCE = this
         launchStart = System.currentTimeMillis()
         instrumentation.addTransformer(InjectionHandler)
+
+        addBuiltinMods()
 
         finalize()
     }
@@ -113,8 +136,7 @@ public class WeaveLoader(
      * @see [net.weavemc.loader.impl.bootstrap.transformer.ModInitializerHook]
      */
     @Suppress("unused")
-    @PublicButInternal
-    public fun initializeMods() {
+    fun initializeMods() {
         mods.forEach { weaveMod ->
             weaveMod.config.entryPoints.forEach { entrypoint ->
                 runCatching {
@@ -185,7 +207,7 @@ public class WeaveLoader(
     }
 
     private fun setupAccessWideners() {
-        val tree = mods.asSequence().flatMap { it.config.accessWideners }.mapNotNull { aw ->
+        val tree = mods.flatMap { it.config.accessWideners }.mapNotNull { aw ->
             val res = javaClass.classLoader.getResourceAsStream(aw) ?: return@mapNotNull let {
                 println("[Weave] Could not load access widener configuration $aw")
                 null
@@ -201,6 +223,61 @@ public class WeaveLoader(
 
             override fun apply(node: ClassNode, cfg: Hook.AssemblerConfig) = node.applyWidener(tree)
         })
+    }
+
+    private fun buildContributors(): List<ModContributor> {
+        val url = javaClass.classLoader.getResource(CONTRIBUTORS_FILE_PATH)
+            ?: fatalError("Failed to find $CONTRIBUTORS_FILE_PATH")
+        val text = url.readText()
+
+        @Serializable
+        data class InternalContributor(
+            val login: String,
+            val name: String,
+        )
+
+        return Json.decodeFromString<List<InternalContributor>>(text).map {
+            ModContributorImpl(
+                name = it.name,
+                contact = mapOf("github" to it.login),
+            )
+        }
+    }
+
+    private fun addBuiltinMods() {
+        mods += ModContainerImpl(
+            ModMetadataImpl(
+                "weave-loader",
+                SemanticVersionImpl("1.0.0"),
+                "Weave Loader",
+                "A universal mod loader for Minecraft",
+                buildContributors(),
+                ModContactImpl(
+                    issues = "https://github.com/WeaveMC/Weave-Loader/issues",
+                    sources = "https://github.com/WeaveMC/Weave-Loader",
+                ),
+                listOf(ModLicense.of("GPL-3.0"))
+            ),
+            Path(""),
+            builtin = true
+        )
+        //TODO: add java as a minecraft dependency
+        mods += ModContainerImpl(
+            ModMetadataImpl(
+                "minecraft",
+                RawVersionImpl(GameInfo.versionString),
+                "Minecraft",
+                "The base game",
+                listOf(ModContributorImpl("Mojang")),
+                ModContactImpl(
+                    homepage = "https://minecraft.net",
+                    issues = "https://bugs.mojang.com/secure/Dashboard.jspa",
+                ),
+                listOf(ModLicense.of("ARR"))
+            ),
+            Path(""),
+            builtin = true
+        )
     }
 
     /**
@@ -225,7 +302,7 @@ public class WeaveLoader(
             val state = mixinForNamespace(config.namespace).state
             config.mixinConfigs.forEach { state.registerMixin(modId, it) }
 
-            mods += WeaveMod(modId, config)
+            mods += ModContainerImpl(this.toPath(), config)
             logger.trace("Registered mod $name")
         }
     }

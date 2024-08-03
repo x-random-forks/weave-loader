@@ -2,7 +2,6 @@ package net.weavemc.loader.impl.bootstrap.transformer
 
 import me.xtrm.klog.dsl.klog
 import net.weavemc.internals.asm
-import net.weavemc.loader.impl.bootstrap.PublicButInternal
 import net.weavemc.loader.impl.mixin.LoaderClassWriter
 import net.weavemc.loader.impl.util.asClassNode
 import net.weavemc.loader.impl.util.asClassReader
@@ -18,8 +17,7 @@ import java.net.URLClassLoader
 
 // Makes sure to run the application within some notion of a "custom" ClassLoader,
 // such that signing integrity errors will not occur
-@PublicButInternal
-public object ApplicationWrapper {
+internal object ApplicationWrapper {
     internal fun insertWrapper(className: String, originalClass: ByteArray): ByteArray {
         val reader = originalClass.asClassReader()
         val node = reader.asClassNode()

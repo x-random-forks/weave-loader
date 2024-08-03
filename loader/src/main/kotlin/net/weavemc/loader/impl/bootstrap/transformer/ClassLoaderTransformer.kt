@@ -3,7 +3,6 @@ package net.weavemc.loader.impl.bootstrap.transformer
 import net.weavemc.internals.asm
 import net.weavemc.internals.internalNameOf
 import net.weavemc.internals.visitAsm
-import net.weavemc.loader.impl.bootstrap.PublicButInternal
 import net.weavemc.loader.impl.mixin.LoaderClassWriter
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
@@ -13,14 +12,12 @@ import org.objectweb.asm.tree.LabelNode
 import java.net.URL
 import java.net.URLClassLoader
 
-@PublicButInternal
-public interface URLClassLoaderAccessor {
-    public val weaveBacking: ClassLoader
-    public fun addWeaveURL(url: URL)
+internal interface URLClassLoaderAccessor {
+    val weaveBacking: ClassLoader
+    fun addWeaveURL(url: URL)
 }
 
-@PublicButInternal
-public object URLClassLoaderTransformer : SafeTransformer {
+internal object URLClassLoaderTransformer : SafeTransformer {
     override fun transform(loader: ClassLoader?, className: String, originalClass: ByteArray): ByteArray? {
         if (loader == null) return null
 

@@ -7,12 +7,14 @@ kxser = "1.7.1"
 mappings-util = "0.1.6"
 gradle-shadow = "8.1.1"
 klog = "0.0.5"
+flexver = "+"
 
 [libraries]
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 asm-tree = { module = "org.ow2.asm:asm-tree", version.ref = "asm" }
 asm-commons = { module = "org.ow2.asm:asm-commons", version.ref = "asm" }
 asm-util = { module = "org.ow2.asm:asm-util", version.ref = "asm" }
+flexver = { module = "com.unascribed:flexver-java", version.ref = "flexver" }
 klog = { module = "me.xtrm:klog", version.ref = "klog" }
 mixin = { module = "net.fabricmc:sponge-mixin", version.ref = "mixin" }
 kxser-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kxser" }

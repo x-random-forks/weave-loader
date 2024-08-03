@@ -2,7 +2,7 @@ package net.weavemc.loader.impl.bootstrap.transformer
 
 import net.weavemc.internals.asm
 import net.weavemc.internals.internalNameOf
-import net.weavemc.loader.impl.WeaveLoader
+import net.weavemc.loader.impl.WeaveLoaderImpl
 import net.weavemc.loader.impl.mixin.LoaderClassWriter
 import net.weavemc.loader.impl.util.asClassNode
 import net.weavemc.loader.impl.util.fatalError
@@ -12,7 +12,7 @@ import org.objectweb.asm.ClassWriter
 /**
  * Transformer meant to start the initialization phase for Weave Mods by hooking [net.minecraft.client.main.Main.main].
  *
- * @see [net.weavemc.api.ModInitializer.init]
+ * @see [net.weavemc.loader.api.ModInitializer.init]
  */
 internal object ModInitializerHook : SafeTransformer {
     override fun transform(loader: ClassLoader?, className: String, originalClass: ByteArray): ByteArray? {
@@ -23,8 +23,8 @@ internal object ModInitializerHook : SafeTransformer {
 
         val main = node.methods.find { it.name == "main" } ?: fatalError("Failed to find main method in $className")
         main.instructions.insert(asm {
-            invokestatic(internalNameOf<WeaveLoader>(), "getInstance", "()L${internalNameOf<WeaveLoader>()};")
-            invokevirtual(internalNameOf<WeaveLoader>(), "initializeMods", "()V")
+            invokestatic(internalNameOf<WeaveLoaderImpl>(), "getInstance", "()L${internalNameOf<WeaveLoaderImpl>()};")
+            invokevirtual(internalNameOf<WeaveLoaderImpl>(), "initializeMods", "()V")
         })
 
         return LoaderClassWriter(loader, reader, ClassWriter.COMPUTE_MAXS).also { node.accept(it) }.toByteArray()

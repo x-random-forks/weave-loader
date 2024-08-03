@@ -5,7 +5,7 @@ import me.xtrm.klog.dsl.klog
 import net.weavemc.internals.*
 import net.weavemc.internals.MappingsType.MCP
 import net.weavemc.internals.MappingsType.MOJANG
-import net.weavemc.loader.impl.WeaveLoader
+import net.weavemc.loader.impl.WeaveLoaderImpl
 import org.objectweb.asm.*
 import org.objectweb.asm.commons.ClassRemapper
 import org.objectweb.asm.commons.Remapper
@@ -14,18 +14,18 @@ import java.io.File
 import java.util.*
 import java.util.jar.JarFile
 
-public object MappingsHandler {
+internal object MappingsHandler {
     private val logger by klog
-    public val relocationRemapper: Remapper? by lazy { createRelocationRemapper() }
-    public val vanillaJar: File by lazy { FileManager.getVanillaMinecraftJar() }
+    private val relocationRemapper: Remapper? by lazy { createRelocationRemapper() }
+    private val vanillaJar: File by lazy { FileManager.getVanillaMinecraftJar() }
 
-    public val mergedMappings: WeaveMappings by lazy {
+    val mergedMappings: WeaveMappings by lazy {
         logger.info("Loading merged mappings for ${GameInfo.version.versionName}")
         logger.debug("Vanilla jar: $vanillaJar")
         MappingsRetrieval.loadMergedWeaveMappings(GameInfo.version.versionName, vanillaJar)
     }
 
-    public val environmentNamespace: String by lazy {
+    val environmentNamespace: String by lazy {
         System.getProperty("weave.environment.namespace") ?: when (GameInfo.client) {
             MinecraftClient.LUNAR -> if (GameInfo.version < MinecraftVersion.V1_16_5) MCP.named else MOJANG.named
             MinecraftClient.FORGE -> MCP.srg
@@ -33,7 +33,7 @@ public object MappingsHandler {
         }
     }
 
-    internal fun classLoaderBytesProvider(expectedNamespace: String): (String) -> ByteArray? {
+    fun classLoaderBytesProvider(expectedNamespace: String): (String) -> ByteArray? {
         val names = if (expectedNamespace != "official") mergedMappings.mappings.asASMMapping(
             from = expectedNamespace,
             to = "official",
@@ -42,14 +42,14 @@ public object MappingsHandler {
         ) else emptyMap()
 
         val mapper = SimpleRemapper(names.toList().associate { (k, v) -> v to k })
-        val callback = ClasspathLoaders.fromLoader(WeaveLoader::class.java.classLoader)
+        val callback = ClasspathLoaders.fromLoader(WeaveLoaderImpl::class.java.classLoader)
 
         return { name -> callback(names[name] ?: name)?.remap(mapper) }
     }
 
     private val cachedMappers = mutableMapOf<Pair<String, String>, MappingsRemapper>()
 
-    public fun mapper(from: String, to: String): MappingsRemapper = cachedMappers.getOrPut(from to to) {
+    fun mapper(from: String, to: String): MappingsRemapper = cachedMappers.getOrPut(from to to) {
         MappingsRemapper(mergedMappings.mappings, from, to, loader = classLoaderBytesProvider(from))
     }
 
@@ -138,7 +138,7 @@ public object MappingsHandler {
         jarsToUse.forEach { it.close() }
     }
 
-    public fun isNamespaceAvailable(ns: String): Boolean = ns in mergedMappings.mappings.namespaces
+    fun isNamespaceAvailable(ns: String): Boolean = ns in mergedMappings.mappings.namespaces
 }
 
 private val relocationData: Properties by lazy {

@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import tasks.CreateRelocationData
 
 plugins {
     id("com.github.johnrengelman.shadow")
@@ -17,6 +18,7 @@ val packagesList = listOf(
     "com.grappenmaker.mappings",
     "org.objectweb.asm",
     "org.spongepowered",
+    "com.unascribed.flexver",
     "kotlin",
     "kotlinx",
 )

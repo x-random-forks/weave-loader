@@ -8,18 +8,19 @@ plugins {
 
 repositories {
     maven("https://maven.fabricmc.net/")
+    maven("https://repo.sleeping.town")
 }
 
 kotlin {
     compilerOptions {
         explicitApi()
-        optIn.add("net.weavemc.loader.impl.bootstrap.PublicButInternal")
     }
 }
 
 dependencies {
     shade(projects.internals)
     shade(libs.klog)
+    shade(libs.flexver)
     shade(libs.kxser.json)
     shade(libs.bundles.asm)
     shade(libs.mappings)

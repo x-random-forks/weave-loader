@@ -163,6 +163,7 @@ internal fun setGameInfo() {
     }
 
     System.getProperties()["weave.game.info"] = mapOf(
+        "gameDir" to cwd,
         "version" to version,
         "client" to client
     )
@@ -173,5 +174,3 @@ internal val illegalToReload = setOf(
     "java.", "javax.", "org.xml.", "org.w3c.", "sun.", "jdk.",
     "com.sun.management.", "org.apache.", "org.slf4j."
 )
-
-internal data class WeaveMod(val modId: String, val config: ModConfig)
